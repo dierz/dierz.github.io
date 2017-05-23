@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml">
+ <head>
+  <title>Оконный интерфейс на HTML для своего сайта</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=windows-1251" />
+  <meta name="keywords" content="html, xhtml, css, java-script, div, окна, оконный интерфейс" />
+  <meta name="description" content="Реализация оконного интерфейсы на HTML с простейшими функциями развернуть/свернуть и переместить окно" />
+  <style type="text/css">
+	.window { /*Окно*/
+ 	          background-color : rgba(200,200,200,0.5);
+                  border-radius:5px;  
+                  box-shadow: 0px 0px 10px #777;
+                  border: solid 1px #aaa; 
+	          margin : 10px;
+                  padding-right : 16px;
+                  padding-bottom : 44px;
+                  position : relative;
+	          width : 350px;
+	          height : 250px;
+                  float : left;             
+                  z-index : 0; 
+        }
+
+	.window-head { /*Заголовок окна*/
+                  margin : 0px;
+                  padding : 5px;  
+                  height : 18px;
+                  border-radius:5px 5px 0 0;  
+	}
+
+	.window-head h1 { /*Подпись заголовка окна*/
+    	          font-family : "trebuchet ms", Verdana, Tahoma, Arial, Sans-Serif;
+ 	          font-size : 14px;
+	          color : #333;
+                  margin : 0px;
+                  display : inline;
+                  text-shadow: #fff 1px 1px 2px;
+	}
+
+	.window-head img { /*Картинка - кнопка 'Развернуть/Свернуть'*/
+                  margin-right : -16px;
+	}
+
+	.window-head img:hover { /*Картинка - кнопка 'Развернуть/Свернуть', когда над ней находится курсор мыши*/
+                  box-shadow: 0px 0px 5px #777;
+                  cursor : pointer;
+	}
+
+	.window-body { /*Рабочая область окна*/
+ 	          background-color : #fff;
+                  border-radius:0 0 5px 5px;  
+                  border: solid 1px #ccc; 
+    	          font-family : "trebuchet ms", Verdana, Tahoma, Arial, Sans-Serif;
+ 	          font-size : 12px;
+	          color : #333;
+                  margin : 2px;
+                  padding : 5px;
+                  overflow : hidden;
+                  position : relative;
+                  left : 0px; top : 0px; width : 100%; height : 100%;
+	}
+
+	.window-expanded { /*Окно развернутое*/
+                  padding-right : 16px;
+                  padding-bottom : 44px;
+ 	          background-color : rgba(200,200,200,0.5);
+                  border-radius:5px;  
+                  box-shadow: 0px 0px 10px #777;
+                  position : absolute;
+                  left : 10%; top : 10%; width : 80%; height : 80%;
+                  z-index : 1; 
+	}
+
+	.window-expanded .window-body { /*Рабочая область окна, когда оно развернуто*/
+                  overflow : auto;
+	}
+
+        .copyright {/*Блок для вывода информации об авторском праве*/
+                  clear : both;
+        }
+
+        .copyright p {/*Стиль для вывода информации об авторском праве*/
+	          font-family : "trebuchet ms", Verdana, Tahoma, Arial, Sans-Serif;
+         	  font-size : 11px;
+     	          color : #111;
+                  position : relative;
+                  text-align : center;
+        }
+       </style>
+       <script type="text/javascript">
+        //Текущее развернутое окно
+        var expandedWnd;
+        //Смещение курсора мыши относительно левого верхнего угла окна в момент начала его перемещения 
+        var offsetX;
+        var offsetY; 
+
+        function OnClick(wnd){
+         if (wnd.className=='window')
+            Expand(wnd);
+         else
+            Collapse(wnd);
+        }  
+       
+        function Expand(wnd)
+        {
+          //Если какое-то окно развернуто, то сворачиваем его
+          if (expandedWnd!=null)
+              Collapse();
+          
+          //Меняем стиль окна и картинку-кнопку сверху-справа
+          wnd.className = 'window-expanded';  
+          wnd.getElementsByClassName('window-head')[0].getElementsByTagName('img')[0].src='images/collapse.png';       
+          
+          //Попытка установить координаты-результат последнего перемещения данного окна
+          var left = parseInt(wnd['left-pos']);
+          if (!isNaN(left))
+              wnd.style.left = left+'px';           
+
+          var top = parseInt(wnd['top-pos']);
+          if (!isNaN(top))
+              wnd.style.top = top+'px';           
+ 
+          //Сохраняем ссылку на текущее развернутое окно 
+          expandedWnd=wnd;
+        }  
+
+        function Collapse()
+        {
+          if (expandedWnd==null)
+              return;
+
+          //Устанавливаем координаты по-умолчанию 
+          expandedWnd.style.left = '';
+          expandedWnd.style.top = '';
+         
+          //Меняем стиль окна и картинку-кнопку сверху-справа
+          expandedWnd.className = 'window';  
+          expandedWnd.getElementsByClassName('window-head')[0].getElementsByTagName('img')[0].src='images/expand.png';          
+
+          //Обнуляем ссылку на текущее развернутое окно 
+          expandedWnd=null; 
+        }
+
+        function StartMove(event) 
+        {
+         //Кроссбраузерное получение ссылки на событие и объект - источник события (заголовок окна)
+         event = event || window.event;
+         var header=event.target || event.srcElement;
+         //Получаем ссылку на само окно
+         var wnd=header.parentNode;
+
+         //Если окно не является текущим развернутым, то выходим из функции 
+         if (wnd!=expandedWnd)
+             return;
+
+         //На время перемещения окна запрещаем документу обработку мыши по умолчанию, что позволяет
+         //запретить выделение текста мышью.
+         document.onmousedown = function(event) {return false;}
+
+         //Кроссбраузерное получение координат мыши  
+         var x = event.pageX || event.x;
+         var y = event.pageY || event.y;
+
+         //Получение координат текущего окна
+         var rect = wnd.getBoundingClientRect();
+         //Вычисление смещения курсора мыши относительно левого верхнего угла окна
+         offsetX = x-rect.left;
+         offsetY = y-rect.top;
+
+         //Присваиваем обработчик события перемещения мыши 
+         document.onmousemove = function(event) 
+                  {       
+                   //Кроссбраузерное получение ссылки на событие
+                   event = event || window.event;
+
+                   //Кроссбраузерное получение координат мыши  
+                   var x = event.pageX || event.x;
+                   var y = event.pageY || event.y;
+
+                   //Вычисление новых координат окна
+                   x=x-offsetX;
+                   y=y-offsetY;  
+
+                   //Присвоение новых координат окна 
+                   expandedWnd.style.left = x+'px';
+                   expandedWnd.style.top = y+'px';
+
+                   //Сохранение координат для возможности установки по ним окна в процессе следующего раскрытия
+                   expandedWnd['left-pos'] = x;
+                   expandedWnd['top-pos'] = y;
+
+                  }
+ 
+         //Присваиваем обработчик события, когда кнопка мыши будет отпущена
+         //(восстанавливаем обработчики событий по умолчанию) 
+         document.onmouseup = function() {document.onmousemove = null; document.onmousedown = null;};
+        }       
+      </script>
+     </head>
+     <body background="./Оконный интерфейс на HTML для своего сайта_files/background.png">
+      <div class="window"><div class="window-head" onmousedown="StartMove(event);"><h1>Реализация оконного интерфейса на HTML</h1><img align="right" src="./Оконный интерфейс на HTML для своего сайта_files/expand.png" onclick="OnClick(this.parentNode.parentNode)" /></div><div class="window-body">
+       <p><pre style="display:inline">     </pre>Что такое оконный интерфейс, думаю, объяснять не нужно. Появление его в окне браузера - событие, как минимум, неожиданное, поэтому использование окон в веб-дизайне может быть оправдано. С другой стороны, полноценная реализация всей функциональности, связанной с оконным интерфейсом, может быть затруднена тем, что не все браузеры позволяют обрабатывать события пользователя, в частности 'мышиные' события, одинаково. Например, в ходе создания этого примера я не сразу нашел способ, как в момент перетаскивания окна запретить функцию выбора текста, которая для документа по умолчанию доступна всегда. Интернет браузеры даже догадываются о моих истинных намерениях, когда я явно задаю развернутому окну другой z-index, но, тем не менее, различные казусы неизбежны.</p><p><pre style="display:inline">     </pre>Перед вами простейшая реализация оконного интерфейса на HTML, поскольку реализовано только представление блока DIV в виде, отдаленно напоминающем интерфейс Microsoft Windows 7 и две функции: развернуть/свернуть окно и переместить развернутое окно. Если окно развернуть, переместить и снова свернуть, то при повторном его разворачивании оно окажется там, где осталось в конце последнего перемещения. Реализация сохранения координат окна демонстрирует технику сохранения любых параметров, связанных с выбранным элементом. Детали реализации я представил в отдельных окнах : CSS и Java-Script, где есть все необходимые комментарии. Особое внимание в настройка CSS, как мне кажется, стоит уделить позиционированию элементов окна в режиме абсолютных координат. В Java-Script отдельное внимание следует уделить технике подмены класса для выбранного элемента, поскольку смена класса - более предпочтительный прием, нежели изменение частных настроек стиля через свойство style. Заменяя одни класс на другой, не вдаваясь в детали стиля, вы, тем самым, разделяете зону ответственности CSS и Java-Script, отдавая первому заботу о представлении страницы, а второму - о поведении. Также, процедура StartMove демонстрирует технику перемещения объектов, которую можно применять не только в контексте оконного интерфейса.</p>
+      </div></div>
+      <div class="window"><div class="window-head" onmousedown="StartMove(event);"><h1>Настройки CSS</h1><img align="right" src="./Оконный интерфейс на HTML для своего сайта_files/expand.png" onclick="OnClick(this.parentNode.parentNode)" /></div><div class="window-body">
+       <pre>&lt;style type="text/css"&gt;
+	.window { /*Окно*/
+ 	          background-color : rgba(200,200,200,0.5);
+                  border-radius:5px;  
+                  box-shadow: 0px 0px 10px #777;
+                  border: solid 1px #aaa; 
+	          margin : 10px;
+                  padding-right : 16px;
+                  padding-bottom : 44px;
+                  position : relative;
+	          width : 350px;
+	          height : 250px;
+                  float : left;             
+                  z-index : 0; 
+        }
+
+	.window-head { /*Заголовок окна*/
+                  margin : 0px;
+                  padding : 5px;  
+                  height : 18px;
+                  border-radius:5px 5px 0 0;  
+	}
+
+	.window-head h1 { /*Подпись заголовка окна*/
+    	          font-family : "trebuchet ms", Verdana, Tahoma, Arial, Sans-Serif;
+ 	          font-size : 14px;
+	          color : #333;
+                  margin : 0px;
+                  display : inline;
+                  text-shadow: #fff 1px 1px 2px;
+	}
+
+	.window-head img { /*Картинка - кнопка 'Развернуть/Свернуть'*/
+                  margin-right : -16px;
+	}
+
+	.window-head img:hover { /*Картинка - кнопка 'Развернуть/Свернуть', когда над ней находится курсор мыши*/
+                  box-shadow: 0px 0px 5px #777;
+                  cursor : pointer;
+	}
+
+	.window-body { /*Рабочая область окна*/
+ 	          background-color : #fff;
+                  border-radius:0 0 5px 5px;  
+                  border: solid 1px #ccc; 
+    	          font-family : "trebuchet ms", Verdana, Tahoma, Arial, Sans-Serif;
+ 	          font-size : 12px;
+	          color : #333;
+                  margin : 2px;
+                  padding : 5px;
+                  overflow : hidden;
+                  position : relative;
+                  left : 0px; top : 0px; width : 100%; height : 100%;
+	}
+
+	.window-expanded { /*Окно развернутое*/
+                  padding-right : 16px;
+                  padding-bottom : 44px;
+ 	          background-color : rgba(200,200,200,0.5);
+                  border-radius:5px;  
+                  box-shadow: 0px 0px 10px #777;
+                  position : absolute;
+                  left : 10%; top : 10%; width : 80%; height : 80%;
+                  z-index : 1; 
+	}
+
+	.window-expanded .window-body { /*Рабочая область окна, когда оно развернуто*/
+                  overflow : auto;
+	}
+
+        .copyright {/*Блок для вывода информации об авторском праве*/
+                  clear : both;
+        }
+
+        .copyright p {/*Стиль для вывода информации об авторском праве*/
+	          font-family : "trebuchet ms", Verdana, Tahoma, Arial, Sans-Serif;
+         	  font-size : 11px;
+     	          color : #111;
+                  position : relative;
+                  text-align : center;
+        }
+&lt;/style&gt;</pre></div></div>
+      <div class="window"><div class="window-head" onmousedown="StartMove(event);"><h1>Код Java-script</h1><img align="right" src="./Оконный интерфейс на HTML для своего сайта_files/expand.png" onclick="OnClick(this.parentNode.parentNode)" /></div><div class="window-body">
+       <pre>&lt;script type="text/javascript"&gt;
+        //Текущее развернутое окно
+        var expandedWnd;
+        //Смещение курсора мыши относительно левого верхнего угла окна в момент начала его перемещения 
+        var offsetX;
+        var offsetY; 
+
+        function OnClick(wnd){
+         if (wnd.className=='window')
+            Expand(wnd);
+         else
+            Collapse(wnd);
+        }  
+       
+        function Expand(wnd)
+        {
+          //Если какое-то окно развернуто, то сворачиваем его
+          if (expandedWnd!=null)
+              Collapse();
+          
+          //Меняем стиль окна и картинку-кнопку сверху-справа
+          wnd.className = 'window-expanded';  
+          wnd.getElementsByClassName('window-head')[0].getElementsByTagName('img')[0].src='images/collapse.png';       
+          
+          //Попытка установить координаты-результат последнего перемещения данного окна
+          var left = parseInt(wnd['left-pos']);
+          if (!isNaN(left))
+              wnd.style.left = left+'px';           
+
+          var top = parseInt(wnd['top-pos']);
+          if (!isNaN(top))
+              wnd.style.top = top+'px';           
+ 
+          //Сохраняем ссылку на текущее развернутое окно 
+          expandedWnd=wnd;
+        }  
+
+        function Collapse()
+        {
+          if (expandedWnd==null)
+              return;
+
+          //Устанавливаем координаты по-умолчанию 
+          expandedWnd.style.left = '';
+          expandedWnd.style.top = '';
+         
+          //Меняем стиль окна и картинку-кнопку сверху-справа
+          expandedWnd.className = 'window';  
+          expandedWnd.getElementsByClassName('window-head')[0].getElementsByTagName('img')[0].src='images/expand.png';          
+
+          //Обнуляем ссылку на текущее развернутое окно 
+          expandedWnd=null; 
+        }
+
+        function StartMove(event) 
+        {
+         //Кроссбраузерное получение ссылки на событие и объект - источник события (заголовок окна)
+         event = event || window.event;
+         var header=event.target || event.srcElement;
+         //Получаем ссылку на само окно
+         var wnd=header.parentNode;
+
+         //Если окно не является текущим развернутым, то выходим из функции 
+         if (wnd!=expandedWnd)
+             return;
+
+         //На время перемещения окна запрещаем документу обработку мыши по умолчанию, что позволяет
+         //запретить выделение текста мышью.
+         document.onmousedown = function(event) {return false;}
+
+         //Кроссбраузерное получение координат мыши  
+         var x = event.pageX || event.x;
+         var y = event.pageY || event.y;
+
+         //Получение координат текущего окна
+         var rect = wnd.getBoundingClientRect();
+         //Вычисление смещения курсора мыши относительно левого верхнего угла окна
+         offsetX = x-rect.left;
+         offsetY = y-rect.top;
+
+         //Присваиваем обработчик события перемещения мыши 
+         document.onmousemove = function(event) 
+                  {       
+                   //Кроссбраузерное получение ссылки на событие
+                   event = event || window.event;
+
+                   //Кроссбраузерное получение координат мыши  
+                   var x = event.pageX || event.x;
+                   var y = event.pageY || event.y;
+
+                   //Вычисление новых координат окна
+                   x=x-offsetX;
+                   y=y-offsetY;  
+
+                   //Присвоение новых координат окна 
+                   expandedWnd.style.left = x+'px';
+                   expandedWnd.style.top = y+'px';
+
+                   //Сохранение координат для возможности установки по ним окна в процессе следующего раскрытия
+                   expandedWnd['left-pos'] = x;
+                   expandedWnd['top-pos'] = y;
+                  }
+ 
+         //Присваиваем обработчик события, когда кнопка мыши будет отпущена
+         //(восстанавливаем обработчики событий по умолчанию) 
+         document.onmouseup = function() {document.onmousemove = null; document.onmousedown = null;};
+        }       
+&lt;/script&gt;
+</pre> 
+      </div></div>
+      <div class="copyright"><p>Учебные материалы сайта <a href="http://codingcraft.ru/" target="_blank">codingcraft.ru</a> по теме <a href="http://codingcraft.ru/web-design/templates.php" target="_blank">основы веб-дизайна</a>. Все права защищены © 2012</p></div>
+ </body>
+</html>

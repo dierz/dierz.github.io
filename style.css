@@ -1,0 +1,166 @@
+body {
+background-color:#FFFACD;
+text-decoration:none;
+}
+.left_bar{
+background-color:#ADD8E6;
+top:0;
+left:0;
+width:15%;
+height:100%;
+position:fixed;
+z-index:50;
+padding:0;
+}
+.right_bar{
+text-decoration:none;
+background-color:#ADD8E6;
+top:0;
+right:0;
+width:20%;
+height:100%;
+position:fixed;
+z-index:50;
+padding:0;
+padding-left:5px;
+font-size:19px;
+text-align:justify;
+}
+
+.top_bar{
+	background-color:#D2691E;
+	top:0;
+	left:0;
+	width:100%;
+	height:35px;
+	text-align:center;
+	padding:0;
+	margin: 0;
+	position:fixed;
+	z-index:100;
+}
+.main_bar{
+	left:15%;
+	right:21%;
+top:35px;
+bottom:20px;
+position:absolute;
+z-index:50;
+
+}
+.title {
+padding:0;
+margin: 0;
+position:fixed;
+top:0;
+z-index:200;
+text-align:center;
+width:100%;
+}
+.title a{
+text-decoration:none;
+font-family:Consolas;
+font-size:22px;
+color:black;
+line-height:35px;
+
+}
+.title img{
+top:0;
+width:32px;
+height:32px;
+padding-right:5px;
+margin:0;
+}
+.menu{
+padding:0;
+margin:0;
+position:fixed;
+left:0;
+top:35px;
+bottom:20px;
+z-index:200;
+width:15%;
+}
+.menu a{
+text-decoration:none;
+}
+.right_bar a{
+text-decoration:none;
+}
+.menu a:hover .menu_item{
+background-color: white;
+color:black;
+}
+.menu_item {
+text-decoration:none;
+color:white;
+position:relative;
+left:0;
+height:40px;
+background-color:grey;
+text-align:center;
+vertical-align:middle;
+font-size:18px;
+border: 1px solid black;
+margin:1px 0px 1px 0px;
+padding:0;
+}
+.main_bar img{
+	padding:5px;
+}
+.login{
+	text-decoration:none;
+	position:relative;
+	width:95%;
+	font-size:30px;
+	height:45px;
+	text-align:center;
+	vertical-align:middle;
+	background-color:lightgreen;
+	border: 1px solid black;
+	z-index:50;
+	padding:0;
+	padding-right:10px;
+	margin-right:30px;
+	margin-bottom:6px;
+}
+.signup{
+	text-decoration:none;
+	position:relative;
+	width:95%;
+	font-size:30px;
+	height:45px;
+	text-align:center;
+	vertical-align:middle;
+	background-color:lightgreen;
+	border: 1px solid black;
+	z-index:50;
+	padding:0;
+	padding-right:10px;
+	margin-right:30px;
+	margin-bottom:6px;
+}
+.signup:hover{
+background-color: white;
+color:black;
+}
+.login:hover{
+background-color: white;
+color:black;
+}
+
+footer {
+	background-color:#D2691E;
+	color:black;
+z-index:100;
+position:fixed;
+left:0;
+bottom:0;
+padding-top:5px;
+width:100%;
+height:15px;
+text-align:center;
+font-size:10px;
+}
+

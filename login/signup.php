@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="../style.css">
 <title>Личная страница</title>
 <style>
 .main_bar span{
@@ -12,22 +12,26 @@ font-family:Verdana
 .vk{
 position:absolute;
 left:5%;
-top:360px;
+top:360;
 }
 .twitter{
 position:absolute;
 left:30%;
-top:360px;
+top:360;
 }
 .facebook{
 position:absolute;
 left:55%;
-top:360px;
+top:360;
 }
 .github{
 position:absolute;
 left:80%;
-top:360px;
+top:360;
+}
+.main_bar {
+text-align:center;
+font-size:22;
 }
 </style>
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
@@ -71,39 +75,28 @@ top:360px;
 <br>
 Ложь, повторенная тысячу раз, становится правдой. <br>                               - Й.Геббельс</i>
 <br><br>
-<a href="login/login.php">
+<a href="login.php">
 <div class="login">
 LOG IN
 </div>
 </a>
-<a href="login/signup.php">
+<a href="signup.php">
 <div class="signup">
 SIGN UP
 </div>
 </a>
 </div>
 <div class="main_bar">
-<img src="../asd.PNG" width="220" height="300" align="left" >
-<br><span>
-Меня зовут Евгений. Мне 19 лет. Я живу в Чернигове, студент, учусь в ЧНТУ. <br>
-И пока это все что нужно знать.<br>
-Добро пожаловать на мою личную страницу!<br>
-На левой панеле вы можете перейти на страницы, контент которых чуть больше раскроет меня вам.<br>
-Ниже вы найдете ссылки на соцсети.
-</span><br>
-<a href="https://vk.com/holisticgeek">
-<img class="vk" src="../vk.png">
-</a>
-<a href="https://twitter.com/iDead5">
-<img class="twitter" src="../twitter.png">
-</a>
-<a href="https://www.facebook.com/profile.php?id=100011089308945">
-<img class="facebook" src="../facebook.png">
-</a>
-<a href="https://github.com/dierz">
-<img class="github" src="../github.png">
-</a>
+<br><br>
+РЕГИСТРАЦИЯ<br><br>
+<form action="do-reg.php" method="post">
+Логин:                 <input type="text" size="20" name="login"><br><br>
+E-mail:                <input type="text" size="20" name="email"><br><br>
+Пароль:                <input type="password" size="20" name="password"><br><br>
+Подтверждение пароля:  <input type="password" size="20" name="password2"><br><br>
+<input type="submit" name="submit"><br><br>
 
+</form>
 </div>
 <footer>
 © Кириченко Евгений КИ-142 idead09@gmail.com
